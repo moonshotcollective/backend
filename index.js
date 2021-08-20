@@ -7,6 +7,8 @@ const routes = require('./routes')
 
 let currentMessage = 'I am **ADDRESS** and I would like to sign in to YourDapp, plz!'
 
+const port = process.env.PORT || 45622
+
 app.use(cors())
 
 app.use(express.json())
@@ -28,11 +30,11 @@ if (fs.existsSync('server.key') && fs.existsSync('server.cert')) {
       },
       app
     )
-    .listen(45622, () => {
-      console.log('HTTPS Listening: 45622')
+    .listen(port, () => {
+      console.log('HTTPS Listening: ' + port)
     })
 } else {
-  var server = app.listen(45622, function () {
+  var server = app.listen(port, function () {
     console.log('HTTP Listening on port:', server.address().port)
   })
 }
