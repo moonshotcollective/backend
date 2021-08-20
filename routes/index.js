@@ -1,0 +1,1 @@
+exports.signUpForTokens = require('./signUpForTokens')
