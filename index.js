@@ -1,11 +1,19 @@
 const express = require('express')
-const fs = require('fs')
-const https = require('https')
-const cors = require('cors')
 const app = express()
-const routes = require('./routes')
+const http = require('http')
+const server = http.createServer(app)
+const { Server } = require('socket.io')
+const cors = require('cors')
+// const fs = require('fs')
 
-let currentMessage = 'I am **ADDRESS** and I would like to sign in to YourDapp, plz!'
+global.io = new Server(server, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+  },
+})
+
+const routes = require('./routes')
 
 const port = process.env.PORT || 45622
 
@@ -16,25 +24,11 @@ app.use(express.urlencoded({ extended: true }))
 
 app.get('/', function (req, res) {
   console.log('/')
-  res.status(200).send(currentMessage)
+  res.status(200).send('Hello App')
 })
 
 app.use('/signUpForTokens', routes.signUpForTokens)
 
-if (fs.existsSync('server.key') && fs.existsSync('server.cert')) {
-  https
-    .createServer(
-      {
-        key: fs.readFileSync('server.key'),
-        cert: fs.readFileSync('server.cert'),
-      },
-      app
-    )
-    .listen(port, () => {
-      console.log('HTTPS Listening: ' + port)
-    })
-} else {
-  var server = app.listen(port, function () {
-    console.log('HTTP Listening on port:', server.address().port)
-  })
-}
+var appServer = server.listen(port, function () {
+  console.log('HTTP Listening on port:', appServer.address().port)
+})

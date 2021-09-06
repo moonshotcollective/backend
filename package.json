@@ -11,7 +11,8 @@
     "cors": "^2.8.5",
     "ethers": "^5.4.5",
     "express": "^4.17.1",
-    "https": "^1.0.0"
+    "https": "^1.0.0",
+    "socket.io": "^4.2.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.12"

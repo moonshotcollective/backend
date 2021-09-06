@@ -4,6 +4,38 @@ const router = express.Router()
 
 const cache = {}
 
+function handleSignIn({ room, signature }) {
+  // recover the signing address
+  recovered = ethers.utils.verifyMessage(room, signature).toLowerCase()
+
+  // make sure room exists
+  if (!cache[room]) {
+    cache[room] = []
+  }
+
+  // add user as a signed in account
+  if (!cache[room].includes(recovered)) {
+    cache[room].push(recovered)
+  }
+
+  // notify the room of a new sign in update
+  io.to(room).emit('new-sign-in', cache[room])
+}
+
+io.on('connection', (socket) => {
+  // get room and subscribe user to room events
+  const { room } = socket.handshake.query
+
+  // send existing room list to user
+  io.to(socket.id).emit('list', cache[room] || [])
+
+  // join room for updates
+  socket.join(room)
+
+  // listen for sign-in event
+  socket.on('sign-in', handleSignIn)
+})
+
 router.get('/', function (req, res) {
   res.status(200).send(`Welcome to token drop sign up`)
 })
